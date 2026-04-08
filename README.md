@@ -6,6 +6,16 @@ Telegram bot with button menu for `Mambo City`:
 - other request (`/other`)
 - my requests (`/myreports`)
 - close request (`/close <id>`, moderators only)
+- dashboard buttons: rules + support
+- user can add extra details to an open report
+- moderator panel buttons in mod chat: take / close / reply
+
+Report form flow:
+1. Minecraft nick
+2. Reason
+3. Incident time
+4. Details/evidence
+5. Contact
 
 ## Quick Start (local)
 
@@ -41,6 +51,9 @@ Optional:
 - `SERVER_NAME` (default: `Mambo City`)
 - `DB_PATH` (default: `reports.db`)
 - `WEBHOOK_BASE_URL` (if not set, bot tries `RENDER_EXTERNAL_URL`)
+- `WEBHOOK_PATH` (default: `telegram/webhook`)
+- `RULES_TEXT`
+- `SUPPORT_TEXT`
 
 Auto-set by `render.yaml`:
 - `TELEGRAM_MODE=webhook`
