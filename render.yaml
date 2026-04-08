@@ -1,0 +1,23 @@
+services:
+  - type: web
+    name: mambo-city-tg-bot
+    env: python
+    plan: free
+    buildCommand: pip install -r requirements.txt
+    startCommand: python tg_bot.py
+    autoDeploy: true
+    envVars:
+      - key: TELEGRAM_BOT_TOKEN
+        sync: false
+      - key: TELEGRAM_MOD_CHAT_ID
+        sync: false
+      - key: TELEGRAM_MOD_USER_IDS
+        sync: false
+      - key: SERVER_NAME
+        value: Mambo City
+      - key: TELEGRAM_MODE
+        value: webhook
+      - key: TELEGRAM_WEBHOOK_SECRET
+        sync: false
+      - key: DB_PATH
+        value: reports.db
