@@ -682,7 +682,10 @@ async def report_time(update: Update, context: ContextTypes.DEFAULT_TYPE) -> int
         await msg.reply_text("Время инцидента не может быть пустым. Попробуй еще:")
         return STATE_TIME
     context.user_data["approx_time"] = incident_time
-    await msg.reply_text("Шаг 4/5. Детали / доказательства (или '-' чтобы пропустить):")
+    await msg.reply_text(
+        f"Принял время инцидента: {incident_time}\n"
+        "Шаг 4/5. Детали / доказательства (или '-' чтобы пропустить):"
+    )
     return STATE_DETAILS
 
 
@@ -882,8 +885,16 @@ async def mod_reply_start(update: Update, context: ContextTypes.DEFAULT_TYPE) ->
 
     context.user_data["mod_reply_report_id"] = report_id
     await query.message.reply_text(
-        f"Ответ игроку по заявке #{report_id}:\n"
-        "Отправь текст одним сообщением."
+        f"Режим ответа по заявке #{report_id} включен.\n"
+        "Теперь отправь текст ответом в личку боту."
+    )
+    await notify_user(
+        context.application,
+        user.id,
+        (
+            f"Режим ответа по заявке #{report_id} включен.\n"
+            "Отправь ответ одним сообщением сюда, в личный чат с ботом."
+        ),
     )
     return STATE_MOD_REPLY_TEXT
 
@@ -1081,6 +1092,7 @@ def main() -> None:
             ]
         },
         fallbacks=[CommandHandler("cancel", cancel_cmd)],
+        per_chat=False,
         allow_reentry=True,
     )
 
