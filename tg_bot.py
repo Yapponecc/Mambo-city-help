@@ -1,6 +1,7 @@
 import asyncio
 import logging
 import os
+import re
 import sqlite3
 from datetime import datetime, timezone
 from typing import Optional
@@ -32,6 +33,7 @@ SERVER_NAME = os.getenv("SERVER_NAME", "Mambo City").strip() or "Mambo City"
 TELEGRAM_MODE = os.getenv("TELEGRAM_MODE", "polling").strip().lower() or "polling"
 WEBHOOK_BASE_URL = os.getenv("WEBHOOK_BASE_URL", "").strip().rstrip("/")
 WEBHOOK_SECRET = os.getenv("TELEGRAM_WEBHOOK_SECRET", "").strip()
+WEBHOOK_PATH = os.getenv("WEBHOOK_PATH", "telegram/webhook").strip().strip("/")
 RENDER_EXTERNAL_URL = os.getenv("RENDER_EXTERNAL_URL", "").strip().rstrip("/")
 try:
     PORT = int(os.getenv("PORT", "10000").strip() or "10000")
@@ -629,7 +631,16 @@ def main() -> None:
             raise RuntimeError(
                 "WEBHOOK_BASE_URL is empty in webhook mode (or missing RENDER_EXTERNAL_URL)."
             )
-        url_path = f"telegram/{TOKEN}"
+        if not WEBHOOK_PATH:
+            raise RuntimeError("WEBHOOK_PATH is empty.")
+        secret_token = WEBHOOK_SECRET or None
+        if secret_token and not re.fullmatch(r"[A-Za-z0-9_-]{1,256}", secret_token):
+            log.warning(
+                "TELEGRAM_WEBHOOK_SECRET has unallowed characters. "
+                "Ignoring secret token for webhook registration."
+            )
+            secret_token = None
+        url_path = WEBHOOK_PATH
         webhook_url = f"{webhook_base_url}/{url_path}"
         log.info(
             "Starting webhook mode on 0.0.0.0:%s, url=%s",
@@ -641,7 +652,8 @@ def main() -> None:
             port=PORT,
             url_path=url_path,
             webhook_url=webhook_url,
-            secret_token=WEBHOOK_SECRET or None,
+            secret_token=secret_token,
+            bootstrap_retries=10,
             drop_pending_updates=False,
         )
         return

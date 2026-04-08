@@ -21,5 +21,7 @@ services:
         value: webhook
       - key: TELEGRAM_WEBHOOK_SECRET
         sync: false
+      - key: WEBHOOK_PATH
+        value: telegram/webhook
       - key: DB_PATH
         value: reports.db
